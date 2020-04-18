@@ -26,6 +26,11 @@ class Weight
      */
     private $mg;
 
+    /**
+     * @ORM\Column(type="string", length=8)
+     */
+    private $short_name;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -51,6 +56,18 @@ class Weight
     public function setMg(int $mg): self
     {
         $this->mg = $mg;
+
+        return $this;
+    }
+
+    public function getShortName(): ?string
+    {
+        return $this->short_name;
+    }
+
+    public function setShortName(string $short_name): self
+    {
+        $this->short_name = $short_name;
 
         return $this;
     }

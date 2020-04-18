@@ -21,6 +21,11 @@ class VolumeSubject
      */
     private $name;
 
+    /**
+     * @ORM\Column(type="float")
+     */
+    private $volume;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -34,6 +39,18 @@ class VolumeSubject
     public function setName(string $name): self
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    public function getVolume(): ?float
+    {
+        return $this->volume;
+    }
+
+    public function setVolume(float $volume): self
+    {
+        $this->volume = $volume;
 
         return $this;
     }

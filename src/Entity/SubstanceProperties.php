@@ -17,19 +17,19 @@ class SubstanceProperties
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Substance", inversedBy="aggregation_state_id")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Substance", inversedBy="substanceProperties")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $substance_id;
+    private $substance;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\AggregationState")
+     * @ORM\ManyToOne(targetEntity="App\Entity\AggregationState", inversedBy="substanceProperties")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $aggregation_state_id;
+    private $aggregation_state;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="float")
      */
     private $density;
 
@@ -38,36 +38,36 @@ class SubstanceProperties
         return $this->id;
     }
 
-    public function getSubstanceId(): ?Substance
+    public function getSubstance(): ?Substance
     {
-        return $this->substance_id;
+        return $this->substance;
     }
 
-    public function setSubstanceId(?Substance $substance_id): self
+    public function setSubstance(?Substance $substance): self
     {
-        $this->substance_id = $substance_id;
+        $this->substance = $substance;
 
         return $this;
     }
 
-    public function getAggregationStateId(): ?AggregationState
+    public function getAggregationState(): ?AggregationState
     {
-        return $this->aggregation_state_id;
+        return $this->aggregation_state;
     }
 
-    public function setAggregationStateId(?AggregationState $aggregation_state_id): self
+    public function setAggregationState(?AggregationState $aggregation_state): self
     {
-        $this->aggregation_state_id = $aggregation_state_id;
+        $this->aggregation_state = $aggregation_state;
 
         return $this;
     }
 
-    public function getDensity(): ?int
+    public function getDensity(): ?float
     {
         return $this->density;
     }
 
-    public function setDensity(int $density): self
+    public function setDensity(float $density): self
     {
         $this->density = $density;
 

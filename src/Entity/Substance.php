@@ -24,13 +24,13 @@ class Substance
     private $name;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\SubstanceProperties", mappedBy="substance_id", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="App\Entity\SubstanceProperties", mappedBy="substance", orphanRemoval=true)
      */
-    private $aggregation_state_id;
+    private $substanceProperties;
 
     public function __construct()
     {
-        $this->aggregation_state_id = new ArrayCollection();
+        $this->substanceProperties = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -53,28 +53,28 @@ class Substance
     /**
      * @return Collection|SubstanceProperties[]
      */
-    public function getAggregationStateId(): Collection
+    public function getSubstanceProperties(): Collection
     {
-        return $this->aggregation_state_id;
+        return $this->substanceProperties;
     }
 
-    public function addAggregationStateId(SubstanceProperties $aggregationStateId): self
+    public function addSubstanceProperty(SubstanceProperties $substanceProperty): self
     {
-        if (!$this->aggregation_state_id->contains($aggregationStateId)) {
-            $this->aggregation_state_id[] = $aggregationStateId;
-            $aggregationStateId->setSubstanceId($this);
+        if (!$this->substanceProperties->contains($substanceProperty)) {
+            $this->substanceProperties[] = $substanceProperty;
+            $substanceProperty->setSubstance($this);
         }
 
         return $this;
     }
 
-    public function removeAggregationStateId(SubstanceProperties $aggregationStateId): self
+    public function removeSubstanceProperty(SubstanceProperties $substanceProperty): self
     {
-        if ($this->aggregation_state_id->contains($aggregationStateId)) {
-            $this->aggregation_state_id->removeElement($aggregationStateId);
+        if ($this->substanceProperties->contains($substanceProperty)) {
+            $this->substanceProperties->removeElement($substanceProperty);
             // set the owning side to null (unless already changed)
-            if ($aggregationStateId->getSubstanceId() === $this) {
-                $aggregationStateId->setSubstanceId(null);
+            if ($substanceProperty->getSubstance() === $this) {
+                $substanceProperty->setSubstance(null);
             }
         }
 
