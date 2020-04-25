@@ -49,6 +49,7 @@ class AppFixtures extends Fixture
             ['uniq_name' => 'l', 'short_name' => 'l', 'name' => 'Litre', 'multiplier' => 0.001,],
             ['uniq_name' => 'ml', 'short_name' => 'ml', 'name' => 'Millilitre', 'multiplier' => 0.000001,],
             ['uniq_name' => 'gls_250', 'short_name' => 'gls_250', 'name' => 'Glass 250ml', 'multiplier' => 0.00025,],
+            ['uniq_name' => 'teaspoon', 'short_name' => 'teaspoon', 'name' => 'Teaspoon', 'multiplier' => 0.00000493,],
         ];
 
         foreach ($rows as $row) {
