@@ -24,13 +24,12 @@ class Substance
     private $name;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\SubstanceProperties", mappedBy="substance", orphanRemoval=true)
+     * @ORM\Column(type="integer")
      */
-    private $substanceProperties;
+    private $density;
 
     public function __construct()
     {
-        $this->substanceProperties = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -50,33 +49,14 @@ class Substance
         return $this;
     }
 
-    /**
-     * @return Collection|SubstanceProperties[]
-     */
-    public function getSubstanceProperties(): Collection
+    public function getDensity(): ?int
     {
-        return $this->substanceProperties;
+        return $this->density;
     }
 
-    public function addSubstanceProperty(SubstanceProperties $substanceProperty): self
+    public function setDensity(int $density): self
     {
-        if (!$this->substanceProperties->contains($substanceProperty)) {
-            $this->substanceProperties[] = $substanceProperty;
-            $substanceProperty->setSubstance($this);
-        }
-
-        return $this;
-    }
-
-    public function removeSubstanceProperty(SubstanceProperties $substanceProperty): self
-    {
-        if ($this->substanceProperties->contains($substanceProperty)) {
-            $this->substanceProperties->removeElement($substanceProperty);
-            // set the owning side to null (unless already changed)
-            if ($substanceProperty->getSubstance() === $this) {
-                $substanceProperty->setSubstance(null);
-            }
-        }
+        $this->density = $density;
 
         return $this;
     }

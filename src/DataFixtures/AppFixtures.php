@@ -2,12 +2,9 @@
 
 namespace App\DataFixtures;
 
-use App\Entity\AggregationState;
+use App\Entity\MeasureNature;
+use App\Entity\MeasureUnit;
 use App\Entity\Substance;
-use App\Entity\SubstanceProperties;
-use App\Entity\Volume;
-use App\Entity\VolumeSubject;
-use App\Entity\Weight;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
 
@@ -16,104 +13,91 @@ class AppFixtures extends Fixture
     public function load(ObjectManager $manager)
     {
         $this->substances($manager);
-        $this->aggregationState($manager);
-        $this->weight($manager);
-        $this->volume($manager);
-        $this->volumeSubject($manager);
+        $this->units($manager);
+        $manager->flush();
+        $this->nature($manager);
+        $manager->flush();
+        $this->fillNature($manager);
         $manager->flush();
 
-//        $this->substanceProperties($manager);
 //        $manager->flush();
     }
 
     private function substances(ObjectManager $manager)
     {
         $rows = [
-            'water', 'sugar', 'salt'
+            ['name' => 'water', 'density' => 998000],
+            ['name' => 'sugar', 'density' => 845350],
+            ['name' => 'salt', 'density' => 2170000],
+            ['name' => 'milk', 'density' => 1030000],
         ];
 
         foreach ($rows as $row) {
             $s = new Substance();
-            $s->setName($row);
-            $manager->persist($s);
-        }
-    }
-
-    private function aggregationState(ObjectManager $manager)
-    {
-        $rows = [
-            'liquid', 'solid', 'powder'
-        ];
-
-        foreach ($rows as $row) {
-            $s = new AggregationState();
-            $s->setName($row);
-            $manager->persist($s);
-        }
-    }
-
-    private function volume(ObjectManager $manager)
-    {
-        $rows = [
-            ['name' => 'Millilitre', 'short_name' => 'ml', 'ml' => 1],
-            ['name' => 'Liter', 'short_name' => 'l', 'ml' => 1000],
-        ];
-
-        foreach ($rows as $row) {
-            $s = new Volume();
             $s->setName($row['name']);
+            $s->setDensity($row['density']);
+            $manager->persist($s);
+        }
+    }
+
+    private function units(ObjectManager $manager)
+    {
+        $rows = [
+            ['uniq_name' => 'g', 'short_name' => 'g', 'name' => 'Gram', 'multiplier' => 1,],
+            ['uniq_name' => 'kg', 'short_name' => 'kg', 'name' => 'Kilogram', 'multiplier' => 1000,],
+            ['uniq_name' => 'm3', 'short_name' => 'm3', 'name' => 'Cube metre', 'multiplier' => 1,],
+            ['uniq_name' => 'l', 'short_name' => 'l', 'name' => 'Litre', 'multiplier' => 0.001,],
+            ['uniq_name' => 'ml', 'short_name' => 'ml', 'name' => 'Millilitre', 'multiplier' => 0.000001,],
+            ['uniq_name' => 'gls_250', 'short_name' => 'gls_250', 'name' => 'Glass 250ml', 'multiplier' => 0.00025,],
+        ];
+
+        foreach ($rows as $row) {
+            $s = new MeasureUnit();
+            $s->setUniqName($row['uniq_name']);
             $s->setShortName($row['short_name']);
-            $s->setMl($row['ml']);
-            $manager->persist($s);
-        }
-    }
-
-    private function weight(ObjectManager $manager)
-    {
-        $rows = [
-            ['name' => 'Milligram', 'short_name' => 'mg', 'mg' => 1],
-            ['name' => 'Kilogram', 'short_name' => 'kg', 'mg' => 1000000],
-            ['name' => 'Gram', 'short_name' => 'g', 'mg' => 1000],
-        ];
-
-        foreach ($rows as $row) {
-            $s = new Weight();
             $s->setName($row['name']);
-            $s->setShortName($row['short_name']);
-            $s->setMg($row['mg']);
+            $s->setMultiplier($row['multiplier']);
             $manager->persist($s);
         }
     }
 
-    private function volumeSubject(ObjectManager $manager)
+    private function nature(ObjectManager $manager)
     {
-        $rows = [
-            ['name' => 'Tea Spoon', 'volume' => 4.92892],
-            ['name' => 'Table Spoon', 'volume' => 14.7868],
-            ['name' => 'Glass 250ml', 'volume' => 250],
-        ];
+        $r = $manager->getRepository(MeasureUnit::class);
 
-        foreach ($rows as $row) {
-            $s = new VolumeSubject();
-            $s->setName($row['name']);
-            $s->setVolume($row['volume']);
-            $manager->persist($s);
-        }
+        $s = new MeasureNature();
+        $s->setName('weight');
+        $s->setBaseUnit($r->findOneBy(['name' => 'Gram']));
+        $manager->persist($s);
+
+        $s = new MeasureNature();
+        $s->setName('volume');
+        $s->setBaseUnit($r->findOneBy(['name' => 'Cube metre']));
+        $manager->persist($s);
     }
 
-    private function substanceProperties(ObjectManager $manager)
+    public function fillNature(ObjectManager $manager)
     {
-        $sp = new SubstanceProperties();
-        $r = $manager->getRepository(Substance::class);
-        $s = $r->find(1);
-        $sp->setSubstance($s);
+        $r = $manager->getRepository(MeasureUnit::class);
+        $mnr = $manager->getRepository(MeasureNature::class);
 
-        $r = $manager->getRepository(AggregationState::class);
-        $s = $r->find(1);
-        $sp->setAggregationState($s);
+        $volume = ['Cube metre', 'Millilitre', 'Litre', 'Glass 250ml'];
+        $weight = ['Gram', 'Kilogram'];
 
-//        kg/m3
-        $sp->setDensity(997);
-        $manager->persist($sp);
+        $nature = $mnr->findOneBy(['name' => 'volume']);
+        foreach ($volume as $name) {
+            /** @var MeasureUnit $entity */
+            $entity = $r->findOneBy(['name' => $name]);
+            $entity->setNature($nature);
+            $manager->persist($entity);
+        }
+
+        $nature = $mnr->findOneBy(['name' => 'weight']);
+        foreach ($weight as $name) {
+            /** @var MeasureUnit $entity */
+            $entity = $r->findOneBy(['name' => $name]);
+            $entity->setNature($nature);
+            $manager->persist($entity);
+        }
     }
 }
