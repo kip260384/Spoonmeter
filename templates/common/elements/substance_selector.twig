@@ -1,0 +1,5 @@
+<select class="select2 substance_selector form-control" id="{{ name }}" name="{{ name }}">
+    {% for item in items %}
+        <option value="{{ item.getId() }}">{{ item.getName() }}</option>
+    {% endfor %}
+</select>

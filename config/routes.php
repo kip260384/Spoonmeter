@@ -1,5 +1,6 @@
 <?php
 
+use App\Controller\ApiController;
 use App\Controller\MeterController;
 use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
 
@@ -19,5 +20,9 @@ return function (RoutingConfigurator $routes) {
 
     $routes->add('meter', '/meter/{substance}/{amount}/{from}/{to}')
         ->controller([MeterController::class, 'convert'])
+    ;
+
+    $routes->add('ajax', '/api/v1/convert')
+        ->controller([ApiController::class, 'convert'])
     ;
 };

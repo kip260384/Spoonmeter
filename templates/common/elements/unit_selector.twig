@@ -1,0 +1,5 @@
+<select class="select2 unit_selector form-control" id="{{ name }}" name="{{ name }}">
+        {% for item in items %}
+                <option value="{{ item.getId() }}">{{ item.getShortName() }}, {{ item.getName() }}</option>
+        {% endfor %}
+</select>
