@@ -6,35 +6,30 @@ namespace App\Converter;
 
 use App\Entity\MeasureUnit;
 use App\Entity\Substance;
-use App\Repository\MeasureUnitRepository;
-use App\Repository\SubstanceRepository;
+use App\Repository\RepositoryLocatorTrait;
 use Doctrine\ORM\EntityManagerInterface;
 
 class ConverterService
 {
+    use RepositoryLocatorTrait;
+
     /** @var EntityManagerInterface */
-    private $objectManager;
+    private $em;
 
     public function __construct(EntityManagerInterface $objectManager)
     {
-        $this->objectManager = $objectManager;
+        $this->em = $objectManager;
     }
 
     public function convert($substance, $amount, $from, $to)
     {
-        /** @var SubstanceRepository $substanceRepo */
-        $substanceRepo = $this->objectManager->getRepository(Substance::class);
-
-        /** @var MeasureUnitRepository $unitRepo */
-        $unitRepo = $this->objectManager->getRepository(MeasureUnit::class);
-
         /** @var Substance $substanceEntity */
-        $substanceEntity = $substanceRepo->findOneBy(['name' => $substance]);
+        $substanceEntity = $this->getSubstanceRepository()->find($substance);
 
         /** @var MeasureUnit $fromEntity */
-        $fromEntity = $unitRepo->findOneBy(['uniq_name' => $from]);
+        $fromEntity = $this->getUnitRepository()->find($from);
         /** @var MeasureUnit $fromEntity */
-        $toEntity = $unitRepo->findOneBy(['uniq_name' => $to]);
+        $toEntity = $this->getUnitRepository()->find($to);
 
         $converter = ConverterFactory::create($fromEntity, $toEntity, $substanceEntity);
 

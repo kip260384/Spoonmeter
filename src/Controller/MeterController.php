@@ -3,26 +3,36 @@
 namespace App\Controller;
 
 use App\Converter\ConverterService;
-use App\Entity\Substance;
-use App\Repository\SubstanceRepository;
+use App\Repository\RepositoryLocatorTrait;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
 
 class MeterController extends AbstractController
 {
+    use RepositoryLocatorTrait;
+
     /** @var ConverterService */
     private $converterService;
 
-    public function __construct(ConverterService $converterService)
+    /** @var EntityManagerInterface */
+    private $em;
+
+    public function __construct(ConverterService $converterService, EntityManagerInterface  $em)
     {
         $this->converterService = $converterService;
+        $this->em = $em;
     }
 
     public function index()
     {
+        $units = $this->getUnitRepository()->findAll();
+        $substances = $this->getSubstanceRepository()->findAll();
+
         return $this->render('meter/index.html.twig', [
             'controller_name' => 'MeterController',
+            'units' => $units,
+            'substances' => $substances,
         ]);
     }
 
