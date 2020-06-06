@@ -1,0 +1,11 @@
+<div class="nav-item dropdown dropdown-menu-right">
+    <a class="nav-link dropdown-toggle" href="#" id="lang_selector" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <span class="flag-icon flag-icon-{{ locales[current_locale].icon }}"> </span> {{ locales[current_locale].name }}
+    </a>
+
+    <div class="dropdown-menu" aria-labelledby="lang_selector">
+        {% for locale, l_data in locales %}
+            <a class="dropdown-item" href="/{{ locale }}"><span class="flag-icon flag-icon-{{ l_data.icon }}"> </span>  {{ l_data.name }}</a>
+        {% endfor %}
+    </div>
+</div>

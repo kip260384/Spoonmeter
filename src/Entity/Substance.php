@@ -5,12 +5,24 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Translatable\Translatable;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\SubstanceRepository")
  */
-class Substance
+class Substance implements Translatable
 {
+    /**
+     * @Gedmo\Locale
+     */
+    private $locale;
+
+    public function setTranslatableLocale($locale)
+    {
+        $this->locale = $locale;
+    }
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -19,6 +31,7 @@ class Substance
     private $id;
 
     /**
+     * @Gedmo\Translatable
      * @ORM\Column(type="string", length=255)
      */
     private $name;

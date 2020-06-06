@@ -2,15 +2,25 @@
 
 use App\Controller\ApiController;
 use App\Controller\MeterController;
+use Symfony\Bundle\FrameworkBundle\Controller\RedirectController;
 use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
 
 return function (RoutingConfigurator $routes) {
-    $routes->add('meter_home', '/')
+
+    $routes->add('no_locale', '/')
+        ->controller(RedirectController::class)
+        ->defaults([
+            'route' => 'meter_home',
+            'permanent' => true,
+            'keepQueryParams' => true,
+        ])
+    ;
+
+    $routes->add('meter_home', '/{_locale}')
         ->controller([MeterController::class, 'index'])
     ;
 
-    $routes->add('meter', '/meter')
-        // the controller value has the format [controller_class, method_name]
+    $routes->add('meter', '/{_locale}/meter')
         ->controller([MeterController::class, 'index'])
 
         // if the action is implemented as the __invoke() method of the
@@ -18,7 +28,7 @@ return function (RoutingConfigurator $routes) {
         // ->controller(BlogController::class)
     ;
 
-    $routes->add('meter', '/meter/{substance}/{amount}/{from}/{to}')
+    $routes->add('meter', '/{_locale}/meter/{substance}/{amount}/{from}/{to}')
         ->controller([MeterController::class, 'convert'])
     ;
 

@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Converter\ConverterService;
 use App\Repository\RepositoryLocatorTrait;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 
 class MeterController extends AbstractController
