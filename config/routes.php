@@ -1,19 +1,14 @@
 <?php
 
 use App\Controller\ApiController;
+use App\Controller\LocaleController;
 use App\Controller\MeterController;
-use Symfony\Bundle\FrameworkBundle\Controller\RedirectController;
 use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
 
 return function (RoutingConfigurator $routes) {
 
     $routes->add('no_locale', '/')
-        ->controller(RedirectController::class)
-        ->defaults([
-            'route' => 'meter_home',
-            'permanent' => true,
-            'keepQueryParams' => true,
-        ])
+        ->controller([LocaleController::class, 'detectLocale'])
     ;
 
     $routes->add('meter_home', '/{_locale}')

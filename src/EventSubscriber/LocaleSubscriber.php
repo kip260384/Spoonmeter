@@ -4,17 +4,18 @@
 namespace App\EventSubscriber;
 
 
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
 class LocaleSubscriber implements EventSubscriberInterface
 {
-    private $defaultLocale;
+    private $params;
 
-    public function __construct($defaultLocale = 'en')
+    public function __construct(ParameterBagInterface $params)
     {
-        $this->defaultLocale = $defaultLocale;
+        $this->params = $params;
     }
 
     public function onKernelRequest(RequestEvent $event)
@@ -31,7 +32,8 @@ class LocaleSubscriber implements EventSubscriberInterface
             $request->getSession()->set('_locale', $locale);
         } else {
             // if no explicit locale has been set on this request, use one from the session
-            $request->setLocale($request->getSession()->get('_locale', $this->defaultLocale));
+            $default = $this->params->get('app.default_locale');
+            $request->setLocale($request->getSession()->get('_locale', $default));
         }
     }
 
