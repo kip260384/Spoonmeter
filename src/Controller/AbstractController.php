@@ -14,7 +14,8 @@ class AbstractController extends SymfonyController
         $request = $this->container->get('request_stack')->getCurrentRequest();
         $locales = [
             'en' => ['icon' => 'gb', 'name' => 'English'],
-            'jp' => ['icon' => 'jp', 'name' => '日本語'],
+            'es' => ['icon' => 'es', 'name' => 'Español'],
+            'ja' => ['icon' => 'jp', 'name' => '日本語'],
             'ru' => ['icon' => 'ru', 'name' => 'Русский'],
         ];
         $parameters['locales'] = $locales;
