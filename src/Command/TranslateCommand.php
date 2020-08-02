@@ -58,53 +58,13 @@ class TranslateCommand extends Command implements LoggerAwareInterface
         }
         $this->logger->info('Start');
 
-        $substances = $this->getSubstanceRepository()->findAll();
+        $this->logger->info('Substances');
+        $entities = $this->getSubstanceRepository()->findAll();
+        $this->translateEntities($entities, 'getName');
 
-        foreach ($this->supportedLocales as $locale) {
-            $this->logger->info('Translating to '.$locale);
-
-            $substancesBatch = [];
-            $subsWoTrans = [];
-            foreach ($substances as $substance) {
-                $substance->setTranslatableLocale('en');
-                $this->em->refresh($substance);
-                $existingTranslations = $this->tr->findTranslations($substance);
-                if (!array_key_exists($locale, $existingTranslations)) {
-                    $substancesBatch[] = $substance->getName();
-                    $subsWoTrans[] = $substance;
-                }
-            }
-
-            if (0 == count($substancesBatch)) {
-                $this->logger->debug('All entities already translated');
-                continue;
-            }
-
-            $translations = [];
-            if ($locale == 'en') {
-                foreach ($substancesBatch as $name) {
-                    $translations[] = ['text' => ucfirst($name), 'input' => $name];
-                }
-            } else {
-                $translations = $this->translator->translateBatch($substancesBatch, [
-                    'source' => 'en',
-                    'target' => $locale,
-                ]);
-            }
-
-            $inputColumn = array_column($translations, 'input');
-            foreach ($subsWoTrans as $key => $substance) {
-                $substance->setTranslatableLocale($locale);
-                $this->em->refresh($substance);
-                $k = array_search($substancesBatch[$key], $inputColumn);
-                $text = $translations[$k]['text'] ?? null;
-                if ($text) {
-                    $substance->setName($this->mb_ucfirst($text));
-                    $this->em->persist($substance);
-                }
-            }
-            $this->em->flush();
-        }
+        $this->logger->info('Units');
+        $entities = $this->getUnitRepository()->findAll();
+        $this->translateEntities($entities, 'getName');
 
         $this->logger->info('End');
         $this->release();
@@ -114,5 +74,54 @@ class TranslateCommand extends Command implements LoggerAwareInterface
     private function mb_ucfirst(string $text): string
     {
         return mb_strtoupper(mb_substr($text, 0, 1)) . mb_substr($text, 1);
+    }
+
+    private function translateEntities($entities, $nameGetter)
+    {
+        foreach ($this->supportedLocales as $locale) {
+            $this->logger->info('Translating to '.$locale);
+
+            $batch = [];
+            $subsWoTrans = [];
+            foreach ($entities as $entity) {
+                $entity->setTranslatableLocale('en');
+                $this->em->refresh($entity);
+                $existingTranslations = $this->tr->findTranslations($entity);
+                if (!array_key_exists($locale, $existingTranslations)) {
+                    $batch[] = $entity->$nameGetter();
+                    $subsWoTrans[] = $entity;
+                }
+            }
+
+            if (0 == count($batch)) {
+                $this->logger->debug('All entities already translated');
+                continue;
+            }
+
+            $translations = [];
+            if ($locale == 'en') {
+                foreach ($batch as $name) {
+                    $translations[] = ['text' => ucfirst($name), 'input' => $name];
+                }
+            } else {
+                $translations = $this->translator->translateBatch($batch, [
+                    'source' => 'en',
+                    'target' => $locale,
+                ]);
+            }
+
+            $inputColumn = array_column($translations, 'input');
+            foreach ($subsWoTrans as $key => $entity) {
+                $entity->setTranslatableLocale($locale);
+                $this->em->refresh($entity);
+                $k = array_search($batch[$key], $inputColumn);
+                $text = $translations[$k]['text'] ?? null;
+                if ($text) {
+                    $entity->setName($this->mb_ucfirst($text));
+                    $this->em->persist($entity);
+                }
+            }
+            $this->em->flush();
+        }
     }
 }

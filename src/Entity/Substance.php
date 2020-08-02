@@ -18,11 +18,6 @@ class Substance implements Translatable
      */
     private $locale;
 
-    public function setTranslatableLocale($locale)
-    {
-        $this->locale = $locale;
-    }
-
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -72,5 +67,10 @@ class Substance implements Translatable
         $this->density = $density;
 
         return $this;
+    }
+
+    public function setTranslatableLocale($locale)
+    {
+        $this->locale = $locale;
     }
 }

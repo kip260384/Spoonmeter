@@ -3,12 +3,19 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Translatable\Translatable;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\MeasureUnitRepository")
  */
-class MeasureUnit
+class MeasureUnit implements Translatable
 {
+    /**
+     * @Gedmo\Locale
+     */
+    private $locale;
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -27,6 +34,7 @@ class MeasureUnit
     private $short_name;
 
     /**
+     * @Gedmo\Translatable
      * @ORM\Column(type="string", length=16)
      */
     private $name;
@@ -126,5 +134,10 @@ class MeasureUnit
         }
 
         return $this;
+    }
+
+    public function setTranslatableLocale($locale)
+    {
+        $this->locale = $locale;
     }
 }
