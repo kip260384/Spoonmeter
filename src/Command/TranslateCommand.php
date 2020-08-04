@@ -14,6 +14,9 @@ use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Google\Cloud\Translate\V2\TranslateClient;
+use Symfony\Component\Translation\MessageCatalogue;
+use Symfony\Component\Translation\Reader\TranslationReaderInterface;
+use Symfony\Component\Translation\Writer\TranslationWriterInterface;
 
 class TranslateCommand extends Command implements LoggerAwareInterface
 {
@@ -32,10 +35,15 @@ class TranslateCommand extends Command implements LoggerAwareInterface
 
     private $supportedLocales;
 
+    private $reader;
+    private $writer;
+
     public function __construct(
         EntityManagerInterface $em,
         TranslateClient $translator,
         $supportedLocales,
+        TranslationReaderInterface $reader,
+        TranslationWriterInterface $writer,
         string $name = null
     )
     {
@@ -43,6 +51,8 @@ class TranslateCommand extends Command implements LoggerAwareInterface
         $this->em = $em;
         $this->translator = $translator;
         $this->supportedLocales = $supportedLocales;
+        $this->reader = $reader;
+        $this->writer = $writer;
 
         /** @var TranslationRepository $repository */
         $translationRepository = $this->em->getRepository('Gedmo\\Translatable\\Entity\\Translation');
@@ -57,6 +67,10 @@ class TranslateCommand extends Command implements LoggerAwareInterface
             return 0;
         }
         $this->logger->info('Start');
+
+        $enCatalogue = new MessageCatalogue('en');
+        $this->reader->read('translations', $enCatalogue);
+        $this->translateMessages($enCatalogue);
 
         $this->logger->info('Substances');
         $entities = $this->getSubstanceRepository()->findAll();
@@ -79,7 +93,10 @@ class TranslateCommand extends Command implements LoggerAwareInterface
     private function translateEntities($entities, $nameGetter)
     {
         foreach ($this->supportedLocales as $locale) {
-            $this->logger->info('Translating to '.$locale);
+            if ('en' == $locale) {
+                continue;
+            }
+            $this->logger->info('Translating entities to '.$locale);
 
             $batch = [];
             $subsWoTrans = [];
@@ -122,6 +139,44 @@ class TranslateCommand extends Command implements LoggerAwareInterface
                 }
             }
             $this->em->flush();
+        }
+    }
+
+    private function translateMessages(MessageCatalogue $enCatalogue)
+    {
+        foreach ($this->supportedLocales as $locale) {
+            if ('en' == $locale) {
+                continue;
+            }
+
+            $this->logger->info('Translating messages to ' . $locale);
+            $localeCatalogue = new MessageCatalogue($locale);
+            $this->reader->read('translations', $localeCatalogue);
+
+            $enMessages = $enCatalogue->all('messages');
+            $localeMessages = $localeCatalogue->all('messages');
+
+            $batch = array_diff_key($enMessages, $localeMessages);
+
+            $translations = $this->translator->translateBatch(array_values($batch), [
+                'source' => 'en',
+                'target' => $locale,
+            ]);
+
+
+            $batchKeys = array_keys($batch);
+            foreach ($batchKeys as $k => $key) {
+                $str = $translations[$k]['text'] ?? null;
+                if ($str) {
+                    $str = $this->mb_ucfirst($str);
+                    $batch[$key] = $str;
+                } else {
+                    unset($batch[$key]);
+                }
+            }
+
+            $localeCatalogue->add($batch);
+            $this->writer->write($localeCatalogue, 'yaml', ['path' => 'translations']);
         }
     }
 }

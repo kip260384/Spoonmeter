@@ -1,28 +1,28 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Spoonmeter - Converter{% endblock %}
+{% block title %}Spoonmeter - {% trans %} converter {% endtrans %}{% endblock %}
 
 {% block body %}
     <div class="row">
         <div class="col-xs-12 col-lg-4">
             <form id="converter_form">
                 <div class="form-group">
-                    <label for="unit_from">Convert from</label>
+                    <label for="unit_from">{% trans %} convert_from {% endtrans %}</label>
                     {% include 'common/elements/unit_selector.twig' with {'name': 'unit_from', 'items': units} %}
                 </div>
                 <div class="form-group">
-                    <label for="unit_to">Convert to</label>
+                    <label for="unit_to">{% trans %} convert_to {% endtrans %}</label>
                     {% include 'common/elements/unit_selector.twig' with {'name': 'unit_to', 'items': units} %}
                 </div>
                 <div class="form-group">
-                    <label for="substance">Substance</label>
+                    <label for="substance">{% trans %} substance {% endtrans %}</label>
                     {% include 'common/elements/substance_selector.twig' with {'name': 'substance', 'items': substances} %}
                 </div>
                 <div class="form-group">
-                    <label for="amount">Amount</label>
-                    <input type="text" class="form-control" id="amount" placeholder="Enter desired amount of the substance">
+                    <label for="amount">{% trans %} amount {% endtrans %}</label>
+                    <input type="text" class="form-control" id="amount" placeholder="{% trans %} amount_placeholder {% endtrans %}">
                 </div>
-                <button type="submit" id="submit" class="btn btn-primary">Calculate</button>
+                <button type="submit" id="submit" class="btn btn-primary">{% trans %} calculate {% endtrans %}</button>
             </form>
         </div>
 
@@ -31,7 +31,7 @@
                 <div class="row justify-content-center">
                     <div class="col align-self-center text-center">
                         <h1 class="display-4" id="result">0.00</h1>
-                        <p class="lead">Your result</p>
+                        <p class="lead">{% trans %} your_result {% endtrans %}</p>
                     </div>
                 </div>
             </div>

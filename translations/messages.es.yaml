@@ -1,0 +1,9 @@
+converter: Convertidor
+calculate: Calcular
+your_result: 'Tu resultado'
+amount_placeholder: 'Ingrese la cantidad deseada de la sustancia'
+convert_from: 'Convertir de'
+convert_to: 'Convertir a'
+substance: Sustancia
+amount: Cantidad
+about: 'Sobre el proyecto'
