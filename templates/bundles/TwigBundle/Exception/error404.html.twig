@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en" class="h-100">
+    <head>
+        <meta charset="UTF-8">
+        <link rel="shortcut icon" href="favicon.png" />
+        <link rel="apple-touch-icon" href="favicon.png" />
+        <title>{% block title %}Spoonmeter{% endblock %} - {% trans %} page_not_found {% endtrans %}</title>
+
+        {% block stylesheets %}
+            {{ encore_entry_link_tags('app') }}
+        {% endblock %}
+    </head>
+    <body class="d-flex flex-column h-100">
+        <div class="flex-grow-1 flex-shrink-0">
+            <div class="container text-center">
+                <h1>404</h1>
+                <h2>{% trans %} page_not_found {% endtrans %}</h2>
+                <a class="btn btn-success" href="/">{% trans %} go_home {% endtrans %}</a>
+            </div>
+        </div>
+    </body>
+</html>
