@@ -3,7 +3,7 @@ calculate: Рассчитать
 your_result: 'Ваш результат'
 amount_placeholder: 'Введите желаемое количество вещества'
 convert_from: 'Конвертировать из'
-convert_to: 'Перевести в'
-substance: Substancce
+convert_to: 'Конвертировать в'
+substance: Вещество
 amount: Количество
 about: 'О проекте'
