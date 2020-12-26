@@ -35,7 +35,10 @@ class TranslateCommand extends Command implements LoggerAwareInterface
 
     private $supportedLocales;
 
+    /** @var TranslationReaderInterface */
     private $reader;
+
+    /** @var TranslationWriterInterface */
     private $writer;
 
     public function __construct(
@@ -158,11 +161,15 @@ class TranslateCommand extends Command implements LoggerAwareInterface
 
             $batch = array_diff_key($enMessages, $localeMessages);
 
+            if (!$batch) {
+                $this->logger->info('Nothing to translate');
+                continue;
+            }
+
             $translations = $this->translator->translateBatch(array_values($batch), [
                 'source' => 'en',
                 'target' => $locale,
             ]);
-
 
             $batchKeys = array_keys($batch);
             foreach ($batchKeys as $k => $key) {

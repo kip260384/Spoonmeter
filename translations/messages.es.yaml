@@ -7,3 +7,5 @@ convert_to: 'Convertir a'
 substance: Sustancia
 amount: Cantidad
 about: 'Sobre el proyecto'
+page_not_found: 'Página no encontrada'
+go_home: 'Volver a la pagina principal'
