@@ -24,12 +24,12 @@ class ConverterFactory
      */
     public static function create(MeasureUnit $convertFrom, MeasureUnit $convertTo, Substance $substance = null): ConverterInterface
     {
-        if ($convertFrom->getNature() === $convertTo->getNature()) {
-            return new SameNatureConverter($convertFrom, $convertTo);
-        }
-
         $inputNature = $convertFrom->getNature()->getName();
         $outputNature = $convertTo->getNature()->getName();
+
+        if ($inputNature === $outputNature) {
+            return new SameNatureConverter($convertFrom, $convertTo);
+        }
 
         /** @var CrossNatureConverterInterface $converterClass */
         foreach (self::REGISTERED_CONVERTERS as $converterClass) {
